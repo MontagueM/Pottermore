@@ -21,13 +21,16 @@ AWand::AWand()
 
 	WandMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WandMesh"));
 	WandMesh->SetupAttachment(Root);
+
+	LumosLightSphere = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("LumosLightSphere"));
+	LumosLightSphere->SetupAttachment(Root);
 }
 
 // Called when the game starts or when spawned
 void AWand::BeginPlay()
 {
 	Super::BeginPlay();
-	if (ensure(WandMesh)) { WandEndLocation = WandMesh->GetSocketLocation(TEXT("WandEnd")); }
+	LumosLightSphere->SetVisibility(false);
 }
 
 // Called every frame
@@ -46,21 +49,23 @@ void AWand::TriggerLumos()
 {
 	FActorSpawnParameters SpawnParams;
 	FAttachmentTransformRules AttachRules = FAttachmentTransformRules(EAttachmentRule::SnapToTarget, false);
-	UE_LOG(LogTemp, Warning, TEXT("trigger lumos 1"))
-	if (!Light) 
+	if (!LumosLight) 
 	{
-		UE_LOG(LogTemp, Warning, TEXT("trigger lumos 2"))
-		Light = GetWorld()->SpawnActor<APointLight>(WandEndLocation, GetActorRotation(), SpawnParams);
-		if (!ensure(Light)) { return; }
-		Light->AttachToComponent(WandMesh, AttachRules, TEXT("WandEnd"));
-		UE_LOG(LogTemp, Warning, TEXT("trigger lumos 3"))
+		LumosLight = GetWorld()->SpawnActor<APointLight>(WandMesh->GetSocketLocation(TEXT("WandEnd")), GetActorRotation(), SpawnParams);
+		//Light->;
+		if (!ensure(LumosLight)) { return; }
+		LumosLight->AttachToComponent(WandMesh, AttachRules, TEXT("WandEnd"));
+		LumosLightSphere->SetVisibility(true);
 	}
-	else { UE_LOG(LogTemp, Warning, TEXT("trigger lumos 4")) Light->Destroy(); Light = nullptr; }
+	else
+	{ 
+		LumosLight->Destroy(); 
+		LumosLight = nullptr;
+		LumosLightSphere->SetVisibility(false);
+	}
 }
 
 void AWand::DebugSpell()
 {
-	UE_LOG(LogTemp, Warning, TEXT("debug spell in wand"))
-		if (SelectedSpell == ESpell::Lumos) { UE_LOG(LogTemp, Warning, TEXT("lumos")) TriggerLumos(); }
-		else { UE_LOG(LogTemp, Warning, TEXT("not lumos")) }
+		if (SelectedSpell == ESpell::Lumos) { TriggerLumos(); }
 }

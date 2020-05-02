@@ -29,23 +29,23 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
 private:
 	UPROPERTY(VisibleAnywhere)
 		class USceneComponent* Root = nullptr;
 	UPROPERTY(VisibleAnywhere)
 		class UStaticMeshComponent* WandMesh = nullptr;
 	UPROPERTY(VisibleAnywhere)
-		class UMotionControllerComponent* MotionController;
+		class UMotionControllerComponent* MotionController = nullptr;
+	UPROPERTY(VisibleAnywhere)
+		class UStaticMeshComponent* LumosLightSphere = nullptr;
 	UPROPERTY(EditDefaultsOnly)
 		ESpell SelectedSpell = ESpell::None;
-	EControllerHand Hand;
-	FVector WandEndLocation;
-
-public:
-	void SetHand(EControllerHand SetHand);
+	class APointLight* LumosLight = nullptr;
+	
 	void TriggerLumos();
-	void DebugSpell();
+public:
+	EControllerHand Hand;
 
-	class APointLight* Light = nullptr;
+	void SetHand(EControllerHand SetHand);
+	void DebugSpell();
 };

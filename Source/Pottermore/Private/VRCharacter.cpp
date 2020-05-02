@@ -55,6 +55,8 @@ void AVRCharacter::BeginPlay()
 	RightController->SetOwner(this);
 	RightController->SetHand(EControllerHand::Right);
 
+	SetupPlayerInputComponent(FindComponentByClass<UInputComponent>());
+
 	SetupWand();
 }
 
@@ -70,12 +72,16 @@ void AVRCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 {
 	if (!ensure(PlayerInputComponent)) { return; }
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
+	// TODO fix double action requests
 	// delete all old keymaps
 	UInputSettings* InputSettings = const_cast<UInputSettings*>(GetDefault<UInputSettings>());
 	TArray<FInputActionKeyMapping> ActionMappings = InputSettings->GetActionMappings();
 	TArray<FInputAxisKeyMapping> AxisMappings = InputSettings->GetAxisMappings();
-	for (FInputActionKeyMapping Mapping : ActionMappings) { InputSettings->RemoveActionMapping(Mapping); }
+	for (FInputActionKeyMapping Mapping : ActionMappings) 
+	{
+		UE_LOG(LogTemp, Warning, TEXT("action mapping %s %s"), *Mapping.ActionName.ToString(), *Mapping.Key.ToString())
+		InputSettings->RemoveActionMapping(Mapping); 
+	}
 	for (FInputAxisKeyMapping Mapping : AxisMappings) { InputSettings->RemoveAxisMapping(Mapping); }
 
 	if (LeftController && RightController)
@@ -116,18 +122,19 @@ void AVRCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 			//UpdateAxisMapping(InputSettings, TEXT("Right"), EKeys::OculusTouch_Left_Thumbstick_Left, -1);
 			UpdateAxisMapping(InputSettings, TEXT("TurnRight"), EKeys::OculusTouch_Right_Thumbstick_X, 1);
 		}
+		UE_LOG(LogTemp, Warning, TEXT("B"))
+		if (WandHand == EControllerHand::Left) { UpdateActionMapping(InputSettings, TEXT("DebugSpellFire"), FKey(), EKeys::OculusTouch_Left_X_Click); }
+		else { UpdateActionMapping(InputSettings, TEXT("DebugSpellFire"), FKey(), EKeys::OculusTouch_Right_A_Click); }
+
+		PlayerInputComponent->BindAxis(TEXT("Forward"), this, &AVRCharacter::MoveForward);
+		PlayerInputComponent->BindAxis(TEXT("Right"), this, &AVRCharacter::MoveRight);
+		PlayerInputComponent->BindAxis(TEXT("TurnRight"), this, &AVRCharacter::TurnRight);
+		PlayerInputComponent->BindAxis(TEXT("Teleport"), this, &AVRCharacter::TryTeleport);
+		PlayerInputComponent->BindAction(TEXT("CheckTeleport"), IE_Pressed, this, &AVRCharacter::StartTeleportationCheck);
+		PlayerInputComponent->BindAction(TEXT("CheckTeleport"), IE_Released, this, &AVRCharacter::StopTeleportationCheck);
+
+		PlayerInputComponent->BindAction(TEXT("DebugSpellFire"), IE_Pressed, this, &AVRCharacter::DebugSpellFire);
 	}
-	PlayerInputComponent->BindAxis(TEXT("Forward"), this, &AVRCharacter::MoveForward);
-	PlayerInputComponent->BindAxis(TEXT("Right"), this, &AVRCharacter::MoveRight);
-	PlayerInputComponent->BindAxis(TEXT("TurnRight"), this, &AVRCharacter::TurnRight);
-	PlayerInputComponent->BindAxis(TEXT("Teleport"), this, &AVRCharacter::TryTeleport);
-	PlayerInputComponent->BindAction(TEXT("CheckTeleport"), IE_Pressed, this, &AVRCharacter::StartTeleportationCheck);
-	PlayerInputComponent->BindAction(TEXT("CheckTeleport"), IE_Released, this, &AVRCharacter::StopTeleportationCheck);
-	
-	if (WandHand == EControllerHand::Left) { UpdateActionMapping(InputSettings, TEXT("DebugSpellFire"), FKey(), EKeys::SpaceBar); }
-	else { UpdateActionMapping(InputSettings, TEXT("DebugSpellFire"), FKey(), EKeys::OculusTouch_Right_A_Click); }
-	UE_LOG(LogTemp, Warning, TEXT("A"))
-	PlayerInputComponent->BindAction(TEXT("DebugSpellFire"), IE_Released, this, &AVRCharacter::DebugSpellFire);
 }
 
 void AVRCharacter::MoveForward(float Scale)
@@ -226,6 +233,7 @@ void AVRCharacter::UpdateAxisMapping(UInputSettings* InputSettings, FName AxisNa
 
 void AVRCharacter::StartTeleportationCheck()
 {
+	UE_LOG(LogTemp, Warning, TEXT("debug start tp check"))
 	GetTeleportController()->SetCanCheckTeleport(true);
 }
 
@@ -274,6 +282,8 @@ void AVRCharacter::SetupWand()
 	Wand->AttachToComponent(VRRoot, FAttachmentTransformRules::KeepRelativeTransform);
 	Wand->SetOwner(this);
 	Wand->SetHand(WandHand);
+	if (LeftController->Hand == WandHand) { LeftController->HideMesh(true); }
+	else { RightController->HideMesh(true); }
 }
 
 void AVRCharacter::DebugSpellFire()

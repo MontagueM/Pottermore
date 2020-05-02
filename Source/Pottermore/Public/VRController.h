@@ -29,6 +29,7 @@ public:
 	bool FindTeleportDestination(FVector& Location);
 	bool UpdateTeleportationCheck();
 	void SetCanCheckTeleport(bool bCheck);
+	void HideMesh(bool bHide);
 
 	bool bAllowCharacterTeleport = false;
 

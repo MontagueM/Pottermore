@@ -218,3 +218,8 @@ void AVRController::ModifySplinePoints(USplineComponent* PathToUpdate, bool bHid
 	if (bClear) { PathToUpdate->ClearSplinePoints(true); }
 	//UE_LOG(LogTemp, Error, TEXT("ClearSplinePoints"))
 }
+
+void AVRController::HideMesh(bool bHide)
+{
+	ControllerMesh->SetVisibility(!bHide);
+}
