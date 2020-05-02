@@ -6,6 +6,13 @@
 #include "GameFramework/Actor.h"
 #include "Wand.generated.h"
 
+UENUM()
+enum class ESpell : uint8
+{
+	None,
+	Lumos
+};
+
 UCLASS()
 class POTTERMORE_API AWand : public AActor
 {
@@ -30,8 +37,15 @@ private:
 		class UStaticMeshComponent* WandMesh = nullptr;
 	UPROPERTY(VisibleAnywhere)
 		class UMotionControllerComponent* MotionController;
+	UPROPERTY(EditDefaultsOnly)
+		ESpell SelectedSpell = ESpell::None;
 	EControllerHand Hand;
+	FVector WandEndLocation;
 
 public:
 	void SetHand(EControllerHand SetHand);
+	void TriggerLumos();
+	void DebugSpell();
+
+	class APointLight* Light = nullptr;
 };

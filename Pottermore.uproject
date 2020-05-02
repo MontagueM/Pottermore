@@ -21,6 +21,15 @@
 		{
 			"Name": "NiagaraExtras",
 			"Enabled": true
+		},
+		{
+			"Name": "MegascansPlugin",
+			"Enabled": true,
+			"SupportedTargetPlatforms": [
+				"Win64",
+				"Mac",
+				"Linux"
+			]
 		}
 	]
 }

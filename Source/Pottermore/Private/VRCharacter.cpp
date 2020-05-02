@@ -55,8 +55,6 @@ void AVRCharacter::BeginPlay()
 	RightController->SetOwner(this);
 	RightController->SetHand(EControllerHand::Right);
 
-	SetupPlayerInputComponent(FindComponentByClass<UInputComponent>());
-
 	SetupWand();
 }
 
@@ -118,8 +116,6 @@ void AVRCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 			//UpdateAxisMapping(InputSettings, TEXT("Right"), EKeys::OculusTouch_Left_Thumbstick_Left, -1);
 			UpdateAxisMapping(InputSettings, TEXT("TurnRight"), EKeys::OculusTouch_Right_Thumbstick_X, 1);
 		}
-		UpdateAxisMapping(InputSettings, TEXT("GrabLeft"), EKeys::OculusTouch_Left_Grip_Axis, 1);
-		UpdateAxisMapping(InputSettings, TEXT("GrabRight"), EKeys::OculusTouch_Right_Grip_Axis, 1);
 	}
 	PlayerInputComponent->BindAxis(TEXT("Forward"), this, &AVRCharacter::MoveForward);
 	PlayerInputComponent->BindAxis(TEXT("Right"), this, &AVRCharacter::MoveRight);
@@ -127,6 +123,11 @@ void AVRCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	PlayerInputComponent->BindAxis(TEXT("Teleport"), this, &AVRCharacter::TryTeleport);
 	PlayerInputComponent->BindAction(TEXT("CheckTeleport"), IE_Pressed, this, &AVRCharacter::StartTeleportationCheck);
 	PlayerInputComponent->BindAction(TEXT("CheckTeleport"), IE_Released, this, &AVRCharacter::StopTeleportationCheck);
+	
+	if (WandHand == EControllerHand::Left) { UpdateActionMapping(InputSettings, TEXT("DebugSpellFire"), FKey(), EKeys::SpaceBar); }
+	else { UpdateActionMapping(InputSettings, TEXT("DebugSpellFire"), FKey(), EKeys::OculusTouch_Right_A_Click); }
+	UE_LOG(LogTemp, Warning, TEXT("A"))
+	PlayerInputComponent->BindAction(TEXT("DebugSpellFire"), IE_Released, this, &AVRCharacter::DebugSpellFire);
 }
 
 void AVRCharacter::MoveForward(float Scale)
@@ -268,10 +269,15 @@ void AVRCharacter::SetupWand()
 	/*
 	Attach the same way as controllers
 	*/
-
 	Wand = GetWorld()->SpawnActor<AWand>(WandClass);
-	if (!ensure(RightController)) { return; }
+	if (!ensure(Wand)) { return; }
 	Wand->AttachToComponent(VRRoot, FAttachmentTransformRules::KeepRelativeTransform);
 	Wand->SetOwner(this);
 	Wand->SetHand(WandHand);
+}
+
+void AVRCharacter::DebugSpellFire()
+{
+	UE_LOG(LogTemp, Warning, TEXT("debug spell in char"))
+	Wand->DebugSpell();
 }
