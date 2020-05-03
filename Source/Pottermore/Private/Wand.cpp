@@ -6,6 +6,8 @@
 #include "MotionControllerComponent.h"
 #include "Engine/PointLight.h" 
 
+#include "DrawDebugHelpers.h" 
+
 // Sets default values
 AWand::AWand()
 {
@@ -36,6 +38,19 @@ void AWand::BeginPlay()
 void AWand::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	//DrawDebugLine(GetWorld(),
+	//GetActorLocation(),
+	//GetActorLocation() + GetActorForwardVector() * 1000,
+	//FColor::Red);
+	//DrawDebugLine(GetWorld(),
+	//GetActorLocation(),
+	//GetActorLocation() + GetActorUpVector() * 1000,
+	//FColor::Blue);
+	//DrawDebugLine(GetWorld(),
+	//GetActorLocation(),
+	//GetActorLocation() + GetActorRightVector() * 1000,
+	//FColor::Yellow);
 }
 
 void AWand::SetHand(EControllerHand SetHand)
