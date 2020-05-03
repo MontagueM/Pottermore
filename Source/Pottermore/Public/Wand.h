@@ -10,8 +10,11 @@ UENUM()
 enum class ESpell : uint8
 {
 	None,
-	Lumos
+	Lumos,
+	Periculum
 };
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPericulumEvent);
 
 UCLASS()
 class POTTERMORE_API AWand : public AActor
@@ -33,19 +36,24 @@ private:
 	UPROPERTY(VisibleAnywhere)
 		class USceneComponent* Root = nullptr;
 	UPROPERTY(VisibleAnywhere)
-		class UStaticMeshComponent* WandMesh = nullptr;
-	UPROPERTY(VisibleAnywhere)
 		class UMotionControllerComponent* MotionController = nullptr;
 	UPROPERTY(VisibleAnywhere)
 		class UStaticMeshComponent* LumosLightSphere = nullptr;
 	UPROPERTY(EditDefaultsOnly)
-		ESpell SelectedSpell = ESpell::None;
+		ESpell SelectedSpell = ESpell::Periculum;
 	class APointLight* LumosLight = nullptr;
 	
 	void TriggerLumos();
+	void TriggerPericulum();
 public:
 	EControllerHand Hand;
 
 	void SetHand(EControllerHand SetHand);
 	void DebugSpell();
+
+	UPROPERTY(BlueprintAssignable)
+		FPericulumEvent PericulumFire;
+
+	UPROPERTY(BlueprintReadWrite)
+		class UStaticMeshComponent* WandMesh = nullptr;
 };

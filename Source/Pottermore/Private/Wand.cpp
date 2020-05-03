@@ -6,7 +6,6 @@
 #include "MotionControllerComponent.h"
 #include "Engine/PointLight.h" 
 
-
 // Sets default values
 AWand::AWand()
 {
@@ -52,7 +51,6 @@ void AWand::TriggerLumos()
 	if (!LumosLight) 
 	{
 		LumosLight = GetWorld()->SpawnActor<APointLight>(WandMesh->GetSocketLocation(TEXT("WandEnd")), GetActorRotation(), SpawnParams);
-		//Light->;
 		if (!ensure(LumosLight)) { return; }
 		LumosLight->AttachToComponent(WandMesh, AttachRules, TEXT("WandEnd"));
 		LumosLightSphere->SetVisibility(true);
@@ -65,7 +63,23 @@ void AWand::TriggerLumos()
 	}
 }
 
+void AWand::TriggerPericulum()
+{
+//	if (something)
+	//{
+		// Cast to blueprint to get this done
+	UE_LOG(LogTemp, Warning, TEXT("Trigger per c++"))
+	PericulumFire.Broadcast();
+	//}
+}
+
 void AWand::DebugSpell()
 {
-		if (SelectedSpell == ESpell::Lumos) { TriggerLumos(); }
+		switch (SelectedSpell)
+		{
+		case ESpell::Lumos:
+			TriggerLumos();
+		case ESpell::Periculum:
+			TriggerPericulum();
+		}
 }
