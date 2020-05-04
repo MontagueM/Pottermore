@@ -11,10 +11,12 @@ enum class ESpell : uint8
 {
 	None,
 	Lumos,
-	Periculum
+	Periculum,
+	Protego
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FPericulumEvent, UStaticMeshComponent*, WandMesh);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FProtegoEvent, UStaticMeshComponent*, WandMesh);
 
 UCLASS()
 class POTTERMORE_API AWand : public AActor
@@ -40,7 +42,7 @@ private:
 	UPROPERTY(VisibleAnywhere)
 		class UStaticMeshComponent* LumosLightSphere = nullptr;
 	UPROPERTY(EditDefaultsOnly)
-		ESpell SelectedSpell = ESpell::None;
+		ESpell SelectedSpell = ESpell::Protego;
 	class APointLight* LumosLight = nullptr;
 	TArray<float> WandVelocityHistory;
 	int32 WandVelocityHistoryMax = 10;
@@ -50,6 +52,7 @@ private:
 
 	void TriggerLumos();
 	void TriggerPericulum();
+	void TriggerProtego();
 	bool bWandVelocityForSpell();
 	void TryFire();
 public:
@@ -61,5 +64,6 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 		FPericulumEvent PericulumFire;
-
+	UPROPERTY(BlueprintAssignable)
+		FProtegoEvent ProtegoFire;
 };

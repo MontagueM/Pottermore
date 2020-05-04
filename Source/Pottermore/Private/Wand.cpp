@@ -79,12 +79,12 @@ void AWand::TriggerLumos()
 
 void AWand::TriggerPericulum()
 {
-//	if (something)
-	//{
-		// Cast to blueprint to get this done
-	//UE_LOG(LogTemp, Warning, TEXT("Trigger per c++"))
 	PericulumFire.Broadcast(WandMesh);
-	//}
+}
+
+void AWand::TriggerProtego()
+{
+	ProtegoFire.Broadcast(WandMesh);
 }
 
 void AWand::DebugSpell()
@@ -99,6 +99,10 @@ void AWand::DebugSpell()
 			UE_LOG(LogTemp, Warning, TEXT("periculum"))
 			TriggerPericulum();
 			break;
+		case ESpell::Protego:
+			UE_LOG(LogTemp, Warning, TEXT("protego"))
+			TriggerProtego();
+			break;
 		}
 }
 
@@ -107,7 +111,9 @@ bool AWand::bWandVelocityForSpell()
 	float WandVelocity = WandMesh->GetPhysicsAngularVelocityInDegrees().Size();
 	//UE_LOG(LogTemp, Warning, TEXT("WandVel %f"), WandVelocity)
 	if (WandVelocityHistory.Num() < WandVelocityHistoryMax)
+	{
 		WandVelocityHistory.Add(WandVelocity);
+	}
 	else
 	{
 		WandVelocityHistory.RemoveAt(0, 1, true);
