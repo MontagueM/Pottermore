@@ -17,14 +17,11 @@ AWand::AWand()
 	MotionController = CreateDefaultSubobject<UMotionControllerComponent>(TEXT("MotionController"));
 	SetRootComponent(MotionController);
 
-	Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
-	Root->SetupAttachment(GetRootComponent());
-
 	WandMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WandMesh"));
-	WandMesh->SetupAttachment(Root);
+	WandMesh->SetupAttachment(GetRootComponent());
 
 	LumosLightSphere = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("LumosLightSphere"));
-	LumosLightSphere->SetupAttachment(Root);
+	LumosLightSphere->SetupAttachment(GetRootComponent());
 }
 
 // Called when the game starts or when spawned
@@ -51,6 +48,8 @@ void AWand::Tick(float DeltaTime)
 	//GetActorLocation(),
 	//GetActorLocation() + GetActorRightVector() * 1000,
 	//FColor::Yellow);
+
+	TryFire();
 }
 
 void AWand::SetHand(EControllerHand SetHand)
@@ -83,8 +82,8 @@ void AWand::TriggerPericulum()
 //	if (something)
 	//{
 		// Cast to blueprint to get this done
-	UE_LOG(LogTemp, Warning, TEXT("Trigger per c++"))
-	PericulumFire.Broadcast();
+	//UE_LOG(LogTemp, Warning, TEXT("Trigger per c++"))
+	PericulumFire.Broadcast(WandMesh);
 	//}
 }
 
@@ -93,8 +92,46 @@ void AWand::DebugSpell()
 		switch (SelectedSpell)
 		{
 		case ESpell::Lumos:
+			UE_LOG(LogTemp, Warning, TEXT("lumos"))
 			TriggerLumos();
+			break;
 		case ESpell::Periculum:
+			UE_LOG(LogTemp, Warning, TEXT("periculum"))
 			TriggerPericulum();
+			break;
 		}
+}
+
+bool AWand::bWandVelocityForSpell()
+{
+	float WandVelocity = WandMesh->GetPhysicsAngularVelocityInDegrees().Size();
+	//UE_LOG(LogTemp, Warning, TEXT("WandVel %f"), WandVelocity)
+	if (WandVelocityHistory.Num() < WandVelocityHistoryMax)
+		WandVelocityHistory.Add(WandVelocity);
+	else
+	{
+		WandVelocityHistory.RemoveAt(0, 1, true);
+		WandVelocityHistory.Add(WandVelocity);
+	}
+
+	if (WandVelocityHistory.Num() == WandVelocityHistoryMax)
+	{
+		/*
+		Acceleration must be very large
+		Velocity must be near-zero
+		*/
+		float Difference = WandVelocityHistory[WandVelocityHistoryMax - 1] - WandVelocityHistory[0];
+		//UE_LOG(LogTemp, Warning, TEXT("Diff %f"), Difference)
+		if (abs(Difference) > SpellActivationVelocity && WandVelocity < 50 && GetWorld()->GetTimeSeconds() - WandActivationTimer > 0.5)
+		{
+			WandActivationTimer = GetWorld()->GetTimeSeconds();
+			return true;
+		}
+	}
+	return false;
+}
+
+void AWand::TryFire()
+{
+	if (bWandVelocityForSpell()) { DebugSpell(); }
 }

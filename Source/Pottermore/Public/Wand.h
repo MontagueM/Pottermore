@@ -14,7 +14,7 @@ enum class ESpell : uint8
 	Periculum
 };
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPericulumEvent);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FPericulumEvent, UStaticMeshComponent*, WandMesh);
 
 UCLASS()
 class POTTERMORE_API AWand : public AActor
@@ -34,26 +34,32 @@ public:
 	virtual void Tick(float DeltaTime) override;
 private:
 	UPROPERTY(VisibleAnywhere)
-		class USceneComponent* Root = nullptr;
-	UPROPERTY(VisibleAnywhere)
 		class UMotionControllerComponent* MotionController = nullptr;
+	UPROPERTY(VisibleAnywhere)
+		class UStaticMeshComponent* WandMesh = nullptr;
 	UPROPERTY(VisibleAnywhere)
 		class UStaticMeshComponent* LumosLightSphere = nullptr;
 	UPROPERTY(EditDefaultsOnly)
-		ESpell SelectedSpell = ESpell::Periculum;
+		ESpell SelectedSpell = ESpell::None;
 	class APointLight* LumosLight = nullptr;
-	
+	TArray<float> WandVelocityHistory;
+	int32 WandVelocityHistoryMax = 10;
+	UPROPERTY(EditDefaultsOnly)
+	float SpellActivationVelocity = 300;
+	float WandActivationTimer = 0;
+
 	void TriggerLumos();
 	void TriggerPericulum();
+	bool bWandVelocityForSpell();
+	void TryFire();
 public:
 	EControllerHand Hand;
 
 	void SetHand(EControllerHand SetHand);
 	void DebugSpell();
 
+
 	UPROPERTY(BlueprintAssignable)
 		FPericulumEvent PericulumFire;
 
-	UPROPERTY(BlueprintReadWrite)
-		class UStaticMeshComponent* WandMesh = nullptr;
 };
