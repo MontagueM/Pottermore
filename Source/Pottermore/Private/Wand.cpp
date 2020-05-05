@@ -90,6 +90,11 @@ void AWand::TriggerProtego()
 	ProtegoFire.Broadcast(WandMesh);
 }
 
+void AWand::TriggerStupefy()
+{
+	StupefyFire.Broadcast(WandMesh);
+}
+
 /* Activates spell effect for different spells */
 void AWand::SpellTrigger()
 {
@@ -106,6 +111,10 @@ void AWand::SpellTrigger()
 		case ESpell::Protego:
 			UE_LOG(LogTemp, Warning, TEXT("protego"))
 			TriggerProtego();
+			break;
+		case ESpell::Stupefy:
+			UE_LOG(LogTemp, Warning, TEXT("stupefy"))
+				TriggerStupefy();
 			break;
 		}
 }
@@ -155,7 +164,7 @@ bool AWand::bVelocityForSpell()
 /* Check to see if the wand is vertical enough for spell activation */
 bool AWand::bVerticalSpell()
 {
-	return false;
+	return true; // TODO richer return value
 }
 
 /* Checking activation systems for different spells */
@@ -167,11 +176,13 @@ bool AWand::bCanTriggerSpell()
 		return bBaseCheckForSpell();
 		break;
 	case ESpell::Periculum:
-		//return bBaseCheckForSpell() && bVerticalSpell();
-		return bBaseCheckForSpell();
+		return bBaseCheckForSpell() && bVerticalSpell();
 		break;
 	case ESpell::Protego:
 		return bVelocityForSpell();
+		break;
+	case ESpell::Stupefy:
+		return bBaseCheckForSpell();
 		break;
 	}
 	return false;

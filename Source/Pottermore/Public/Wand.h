@@ -12,11 +12,13 @@ enum class ESpell : uint8
 	None,
 	Lumos,
 	Periculum,
-	Protego
+	Protego,
+	Stupefy
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FPericulumEvent, UStaticMeshComponent*, WandMesh);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FProtegoEvent, UStaticMeshComponent*, WandMesh);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FStupefyEvent, UStaticMeshComponent*, WandMesh);
 
 UCLASS()
 class POTTERMORE_API AWand : public AActor
@@ -53,6 +55,7 @@ private:
 	void TriggerLumos();
 	void TriggerPericulum();
 	void TriggerProtego();
+	void TriggerStupefy();
 	bool bBaseCheckForSpell();
 	bool bVelocityForSpell();
 	bool bVerticalSpell();
@@ -68,4 +71,6 @@ public:
 		FPericulumEvent PericulumFire;
 	UPROPERTY(BlueprintAssignable)
 		FProtegoEvent ProtegoFire;
+	UPROPERTY(BlueprintAssignable)
+		FStupefyEvent StupefyFire;
 };
