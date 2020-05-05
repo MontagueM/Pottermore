@@ -126,7 +126,8 @@ bool AWand::bBaseCheckForSpell()
 /* Check to see if the wand has enough angular velocity for spell activation */
 bool AWand::bVelocityForSpell()
 {
-	float WandVel = WandMesh->ComponentVelocity.Size();
+	//float WandVel = WandMesh->ComponentVelocity.Size();
+	//UE_LOG(LogTemp, Warning, TEXT("WandVel %f"), WandVel)
 	float WandVelocity = WandMesh->GetPhysicsAngularVelocityInDegrees().Size();
 	//UE_LOG(LogTemp, Warning, TEXT("WandVel %f"), WandVelocity)
 	if (WandVelocityHistory.Num() < WandVelocityHistoryMax)
