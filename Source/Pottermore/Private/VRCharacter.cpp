@@ -289,5 +289,5 @@ void AVRCharacter::SetupWand()
 void AVRCharacter::DebugSpellFire()
 {
 	UE_LOG(LogTemp, Warning, TEXT("debug spell in char"))
-	Wand->DebugSpell();
+	Wand->TryFire();
 }

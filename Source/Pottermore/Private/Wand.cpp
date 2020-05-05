@@ -58,6 +58,7 @@ void AWand::SetHand(EControllerHand SetHand)
 	MotionController->SetTrackingSource(Hand);
 }
 
+/* Lumos spell activation */
 void AWand::TriggerLumos()
 {
 	FActorSpawnParameters SpawnParams;
@@ -77,17 +78,20 @@ void AWand::TriggerLumos()
 	}
 }
 
+/* Periculum spell activation */
 void AWand::TriggerPericulum()
 {
 	PericulumFire.Broadcast(WandMesh);
 }
 
+/* Protego spell activation */
 void AWand::TriggerProtego()
 {
 	ProtegoFire.Broadcast(WandMesh);
 }
 
-void AWand::DebugSpell()
+/* Activates spell effect for different spells */
+void AWand::SpellTrigger()
 {
 		switch (SelectedSpell)
 		{
@@ -106,8 +110,23 @@ void AWand::DebugSpell()
 		}
 }
 
-bool AWand::bWandVelocityForSpell()
+/* Check if wand was fast but is slow now + delay timer */
+bool AWand::bBaseCheckForSpell()
 {
+	float WandVelocity = WandMesh->GetPhysicsAngularVelocityInDegrees().Size();
+	//UE_LOG(LogTemp, Warning, TEXT("Diff %f"), Difference)
+	if (bVelocityForSpell() && WandVelocity < 50 && GetWorld()->GetTimeSeconds() - WandActivationTimer > 0.5)
+	{
+		WandActivationTimer = GetWorld()->GetTimeSeconds();
+		return true;
+	}
+	return false;
+}
+
+/* Check to see if the wand has enough angular velocity for spell activation */
+bool AWand::bVelocityForSpell()
+{
+	float WandVel = WandMesh->ComponentVelocity.Size();
 	float WandVelocity = WandMesh->GetPhysicsAngularVelocityInDegrees().Size();
 	//UE_LOG(LogTemp, Warning, TEXT("WandVel %f"), WandVelocity)
 	if (WandVelocityHistory.Num() < WandVelocityHistoryMax)
@@ -127,17 +146,38 @@ bool AWand::bWandVelocityForSpell()
 		Velocity must be near-zero
 		*/
 		float Difference = WandVelocityHistory[WandVelocityHistoryMax - 1] - WandVelocityHistory[0];
-		//UE_LOG(LogTemp, Warning, TEXT("Diff %f"), Difference)
-		if (abs(Difference) > SpellActivationVelocity && WandVelocity < 50 && GetWorld()->GetTimeSeconds() - WandActivationTimer > 0.5)
-		{
-			WandActivationTimer = GetWorld()->GetTimeSeconds();
-			return true;
-		}
+		return abs(Difference) > SpellActivationVelocity;
 	}
 	return false;
 }
 
+/* Check to see if the wand is vertical enough for spell activation */
+bool AWand::bVerticalSpell()
+{
+	return false;
+}
+
+/* Checking activation systems for different spells */
+bool AWand::bCanTriggerSpell()
+{
+	switch (SelectedSpell)
+	{
+	case ESpell::Lumos:
+		return bBaseCheckForSpell();
+		break;
+	case ESpell::Periculum:
+		//return bBaseCheckForSpell() && bVerticalSpell();
+		return bBaseCheckForSpell();
+		break;
+	case ESpell::Protego:
+		return bVelocityForSpell();
+		break;
+	}
+	return false;
+}
+
+/* External call from VRCharacter to start spell mechanism */
 void AWand::TryFire()
 {
-	if (bWandVelocityForSpell()) { DebugSpell(); }
+	if (bCanTriggerSpell()) { SpellTrigger(); }
 }

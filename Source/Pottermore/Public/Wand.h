@@ -53,14 +53,16 @@ private:
 	void TriggerLumos();
 	void TriggerPericulum();
 	void TriggerProtego();
-	bool bWandVelocityForSpell();
-	void TryFire();
+	bool bBaseCheckForSpell();
+	bool bVelocityForSpell();
+	bool bVerticalSpell();
+	bool bCanTriggerSpell();
+	void SpellTrigger();
 public:
 	EControllerHand Hand;
 
 	void SetHand(EControllerHand SetHand);
-	void DebugSpell();
-
+	void TryFire();
 
 	UPROPERTY(BlueprintAssignable)
 		FPericulumEvent PericulumFire;
