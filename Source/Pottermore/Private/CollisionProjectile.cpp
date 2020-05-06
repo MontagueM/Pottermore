@@ -4,6 +4,7 @@
 #include "CollisionProjectile.h"
 #include "GameFramework/ProjectileMovementComponent.h" 
 #include "Components/CapsuleComponent.h" 
+#include "Wand.h"
 
 // Sets default values
 ACollisionProjectile::ACollisionProjectile()
@@ -32,7 +33,6 @@ void ACollisionProjectile::Tick(float DeltaTime)
 	if (GetWorld()->GetTimeSeconds() - ActivationTime > DeleteTime)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("destroy"))
-
 			Destroy();
 	}
 }
@@ -44,24 +44,41 @@ void ACollisionProjectile::LaunchProjectile(FVector Velocity)
 	ActivationTime = GetWorld()->GetTimeSeconds();
 }
 
-void ACollisionProjectile::Hit(UPrimitiveComponent* HitComponent,
-	AActor* OtherActor,
-	UPrimitiveComponent* OtherComp,
-	FVector NormalImpulse,
-	const FHitResult& Result)
+void ACollisionProjectile::Hit(UPrimitiveComponent* tHitComponent,
+	AActor* tOtherActor,
+	UPrimitiveComponent* tOtherComp,
+	FVector tNormalImpulse,
+	const FHitResult& tResult)
 	{
-		Destroy();
-		// Add impulse (debug as needs to be on stupefy not here)
-		UCapsuleComponent* CharacterCapsule = Cast<UCapsuleComponent>(OtherActor);
-		UStaticMeshComponent* ImpulseComponent = Cast<UStaticMeshComponent>(OtherComp);
-		if (!ensure(ImpulseComponent)) { return; }
-		// If physics object or is hitting player
-		if (ImpulseComponent->IsSimulatingPhysics() || CharacterCapsule)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("impulse"))
-			FVector ImpulseDirection = (Result.TraceEnd - Result.TraceStart).GetSafeNormal();
-			ImpulseComponent->AddForce(ImpulseDirection * 10000000);
-		}
-		//SpawnBlockNiagara.Broadcast(Result);
+	HitComponent = tHitComponent;
+	OtherActor = tOtherActor;
+	NormalImpulse = tNormalImpulse;
+	Result = tResult;
+	//SelectHitAction();
 }
 
+//void ACollisionProjectile::SelectHitAction()
+//{
+//	switch (Spell)
+//	{
+//	case ESpell::Stupefy:
+//		return ImpulseReaction();
+//		break;
+//	}
+//}
+
+/* Add impulse (debug as needs to be on stupefy not here) */
+void ACollisionProjectile::ImpulseReaction()
+{
+	Destroy();
+	UCapsuleComponent* CharacterCapsule = Cast<UCapsuleComponent>(OtherActor);
+	UStaticMeshComponent* ImpulseComponent = Cast<UStaticMeshComponent>(OtherComp);
+	if (!ensure(ImpulseComponent)) { return; }
+	// If physics object or is hitting player
+	if (ImpulseComponent->IsSimulatingPhysics() || CharacterCapsule)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("impulse"))
+			FVector ImpulseDirection = (Result.TraceEnd - Result.TraceStart).GetSafeNormal();
+		ImpulseComponent->AddForce(ImpulseDirection * 10000000);
+	}
+}

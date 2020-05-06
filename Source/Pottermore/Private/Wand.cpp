@@ -8,6 +8,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "DrawDebugHelpers.h" 
 #include "CollisionProjectile.h"
+#include "Haptics/HapticFeedbackEffect_Base.h"
 
 // Sets default values
 AWand::AWand()
@@ -131,20 +132,20 @@ void AWand::SpellTrigger()
 }
 
 /* Projectile trace to find collisions of spell */
-bool AWand::WandProjectileTrace(float ProjectileSpeed, float ProjectileTime)
+void AWand::WandProjectileTrace(float ProjectileSpeed, float ProjectileTime)
 {
 	FTransform WandEndTransform = WandMesh->GetSocketTransform(TEXT("WandEnd"));
 	FVector StartLocation = WandEndTransform.GetLocation();
 	FVector Direction = WandMesh->GetComponentRotation().Vector().RotateAngleAxis(90, GetActorRightVector());
 	// Spawn and fire projectile to get flight time pathing
-	if (!ensure(ProjectileBlueprint)) { return false; }
+	if (!ensure(ProjectileBlueprint)) { return; }
 
 	bool bNoCollisionFail = true;
 	FActorSpawnParameters ActorSpawnParams;
 	ActorSpawnParams.SpawnCollisionHandlingOverride = bNoCollisionFail ? ESpawnActorCollisionHandlingMethod::AlwaysSpawn : ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
-	ACollisionProjectile* SpawnedProjectile = GetWorld()->SpawnActor<ACollisionProjectile>(ProjectileBlueprint, StartLocation, FRotator::ZeroRotator, ActorSpawnParams);	SpawnedProjectile->LaunchProjectile(Direction * ProjectileSpeed);
-
-	return false;
+	ACollisionProjectile* SpawnedProjectile = GetWorld()->SpawnActor<ACollisionProjectile>(ProjectileBlueprint, StartLocation, FRotator::ZeroRotator, ActorSpawnParams);	
+	//SpawnedProjectile->Spell = SelectedSpell;
+	SpawnedProjectile->LaunchProjectile(Direction * ProjectileSpeed);
 }
 
 /* Check if wand was fast but is slow now + delay timer */
@@ -220,4 +221,11 @@ bool AWand::bCanTriggerSpell()
 void AWand::TryFire()
 {
 	if (bCanTriggerSpell()) { SpellTrigger(); }
+}
+
+void AWand::HapticFeedback(float Scale)
+{
+	//UHapticFeedbackEffect_Base* HapticBase;
+	//GetWorld()->GetFirstPlayerController()->PlayHapticEffect(HapticBase, Hand, Scale);
+	//if (Scale == 0) { GetWorld()->GetFirstPlayerController()->StopHapticEffect(Hand); }
 }
