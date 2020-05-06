@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "CollisionProjectile.generated.h"
 
+//DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSpawnBlockNiagaraEvent, FHitResult, HitResult);
+
 UCLASS()
 class POTTERMORE_API ACollisionProjectile : public AActor
 {
@@ -24,13 +26,13 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	void LaunchProjectile(FVector Velocity);
-	void Setup(enum ESpell Spell, class AWand* WandPointer, float DeleteTime);
+
+	//UPROPERTY(BlueprintAssignable)
+	//	FSpawnBlockNiagaraEvent SpawnBlockNiagara;
 private:
 	//UPROPERTY(VisibleAnywhere)
 	//	class UStaticMeshComponent* Collider = nullptr;
 	class UProjectileMovementComponent* ProjectileMovement = nullptr;
-	ESpell WandSpell;
-	class AWand* Wand;
 	UPROPERTY(EditDefaultsOnly)
 	float DeleteTime = 5;
 	float ActivationTime = 0;

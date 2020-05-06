@@ -49,7 +49,7 @@ private:
 	TArray<float> WandVelocityHistory;
 	int32 WandVelocityHistoryMax = 10;
 	UPROPERTY(EditDefaultsOnly)
-	float SpellActivationVelocity = 300;
+	float SpellActivationVelocity = 250;
 	float WandActivationTimer = 0;
 
 	void TriggerLumos();

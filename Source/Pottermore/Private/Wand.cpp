@@ -37,22 +37,22 @@ void AWand::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	DrawDebugLine(GetWorld(),
-	GetActorLocation(),
-	GetActorLocation() + GetActorForwardVector() * 1000,
-	FColor::Red);
-	DrawDebugLine(GetWorld(),
-	GetActorLocation(),
-	GetActorLocation() + GetActorUpVector() * 1000,
-	FColor::Blue);
-	DrawDebugLine(GetWorld(),
-	GetActorLocation(),
-	GetActorLocation() + GetActorRightVector() * 1000,
-	FColor::Yellow);
-	DrawDebugLine(GetWorld(),
-	GetActorLocation(),
-	GetActorLocation() + WandMesh->GetComponentRotation().Vector().RotateAngleAxis(90, GetActorRightVector()) * 1000,
-	FColor::White);
+	//DrawDebugLine(GetWorld(),
+	//GetActorLocation(),
+	//GetActorLocation() + GetActorForwardVector() * 1000,
+	//FColor::Red);
+	//DrawDebugLine(GetWorld(),
+	//GetActorLocation(),
+	//GetActorLocation() + GetActorUpVector() * 1000,
+	//FColor::Blue);
+	//DrawDebugLine(GetWorld(),
+	//GetActorLocation(),
+	//GetActorLocation() + GetActorRightVector() * 1000,
+	//FColor::Yellow);
+	//DrawDebugLine(GetWorld(),
+	//GetActorLocation(),
+	//GetActorLocation() + WandMesh->GetComponentRotation().Vector().RotateAngleAxis(90, GetActorRightVector()) * 1000,
+	//FColor::White);
 
 	TryFire();
 }
@@ -87,11 +87,6 @@ void AWand::TriggerLumos()
 void AWand::TriggerPericulum()
 {
 	PericulumFire.Broadcast(WandMesh);
-
-	// Projectile tracing to match with niagara effect
-	float ProjectileSpeed = 5000;
-	float ProjectileTime = 4;
-	WandProjectileTrace(ProjectileSpeed, ProjectileTime);
 }
 
 /* Protego spell activation */
@@ -100,9 +95,15 @@ void AWand::TriggerProtego()
 	ProtegoFire.Broadcast(WandMesh);
 }
 
+/* Stupefy spell activation */
 void AWand::TriggerStupefy()
 {
 	StupefyFire.Broadcast(WandMesh);
+
+	// Projectile tracing to match with niagara effect
+	float ProjectileSpeed = 3000;
+	float ProjectileTime = 4;
+	WandProjectileTrace(ProjectileSpeed, ProjectileTime);
 }
 
 /* Activates spell effect for different spells */
@@ -135,34 +136,14 @@ bool AWand::WandProjectileTrace(float ProjectileSpeed, float ProjectileTime)
 	FTransform WandEndTransform = WandMesh->GetSocketTransform(TEXT("WandEnd"));
 	FVector StartLocation = WandEndTransform.GetLocation();
 	FVector Direction = WandMesh->GetComponentRotation().Vector().RotateAngleAxis(90, GetActorRightVector());
-	float ProjectileRadius = 2;
-	//FPredictProjectilePathResult Result;
-	//FPredictProjectilePathParams Params(ProjectileRadius,
-	//	StartLocation,
-	//	Direction * ProjectileSpeed,
-	//	ProjectileTime,
-	//	ECollisionChannel::ECC_Pawn, // just dont want it to actually hit result
-	//	this);
-	//Params.DrawDebugType = EDrawDebugTrace::ForDuration;
-	//Params.bTraceComplex = true; // to stop it not showing teleport places due to weird collisions in the map
-	//Params.OverrideGravityZ = -10;
-	//Params.SimFrequency = 30; // dictates smoothness of arc
-	//bool bHit = UGameplayStatics::PredictProjectilePath(this, Params, Result);
 	// Spawn and fire projectile to get flight time pathing
 	if (!ensure(ProjectileBlueprint)) { return false; }
 
 	bool bNoCollisionFail = true;
 	FActorSpawnParameters ActorSpawnParams;
 	ActorSpawnParams.SpawnCollisionHandlingOverride = bNoCollisionFail ? ESpawnActorCollisionHandlingMethod::AlwaysSpawn : ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
-	ACollisionProjectile* SpawnedProjectile = GetWorld()->SpawnActor<ACollisionProjectile>(ProjectileBlueprint, StartLocation, FRotator::ZeroRotator, ActorSpawnParams);
-	SpawnedProjectile->Setup(ESpell::Periculum, this, ProjectileTime);
-	SpawnedProjectile->LaunchProjectile(Direction * ProjectileSpeed);
+	ACollisionProjectile* SpawnedProjectile = GetWorld()->SpawnActor<ACollisionProjectile>(ProjectileBlueprint, StartLocation, FRotator::ZeroRotator, ActorSpawnParams);	SpawnedProjectile->LaunchProjectile(Direction * ProjectileSpeed);
 
-	//if (bHit)
-	//{
-	//	UE_LOG(LogTemp, Warning, TEXT("hit %s"), *Result.HitResult.Actor->GetName())
-	//}
-	//return bHit;
 	return false;
 }
 
