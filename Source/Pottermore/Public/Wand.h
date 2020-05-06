@@ -61,6 +61,7 @@ private:
 	bool bVerticalSpell();
 	bool bCanTriggerSpell();
 	void SpellTrigger();
+	void WandProjectileTrace(float ProjectileSpeed, float ProjectileTime);
 public:
 	EControllerHand Hand;
 

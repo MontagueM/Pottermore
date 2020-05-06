@@ -5,8 +5,9 @@
 #include "Components/StaticMeshComponent.h"
 #include "MotionControllerComponent.h"
 #include "Engine/PointLight.h" 
-
+#include "Kismet/GameplayStatics.h"
 #include "DrawDebugHelpers.h" 
+#include "Kismet/KismetMathLibrary.h" 
 
 // Sets default values
 AWand::AWand()
@@ -48,6 +49,10 @@ void AWand::Tick(float DeltaTime)
 	//GetActorLocation(),
 	//GetActorLocation() + GetActorRightVector() * 1000,
 	//FColor::Yellow);
+	//DrawDebugLine(GetWorld(),
+	//GetActorLocation(),
+	//GetActorLocation() + WandMesh->GetComponentRotation().Vector().RotateAngleAxis(90, GetActorRightVector()) * 1000,
+	//FColor::White);
 
 	TryFire();
 }
@@ -82,6 +87,11 @@ void AWand::TriggerLumos()
 void AWand::TriggerPericulum()
 {
 	PericulumFire.Broadcast(WandMesh);
+
+	// Projectile tracing to match with niagara effect
+	float ProjectileSpeed = 5000;
+	float ProjectileTime = 4;
+	WandProjectileTrace(ProjectileSpeed, ProjectileTime);
 }
 
 /* Protego spell activation */
@@ -117,6 +127,33 @@ void AWand::SpellTrigger()
 				TriggerStupefy();
 			break;
 		}
+}
+
+/* Projectile trace to find collisions of spell */
+void AWand::WandProjectileTrace(float ProjectileSpeed, float ProjectileTime)
+{
+	FPredictProjectilePathResult Result;
+	FTransform WandEndTransform = WandMesh->GetSocketTransform(TEXT("WandEnd"));
+	FVector StartLocation = WandEndTransform.GetLocation();
+	FVector Direction = WandMesh->GetComponentRotation().Vector().RotateAngleAxis(90, GetActorRightVector());
+	float ProjectileRadius = 5;
+	FPredictProjectilePathParams Params(ProjectileRadius,
+		StartLocation,
+		Direction * ProjectileSpeed*1,
+		ProjectileTime*1,
+		ECollisionChannel::ECC_WorldDynamic,
+		this);
+
+	//Params.DrawDebugType = EDrawDebugTrace::Persistent;
+	Params.bTraceComplex = true; // to stop it not showing teleport places due to weird collisions in the map
+	Params.OverrideGravityZ = -10;
+	Params.SimFrequency = 50; // dictates smoothness of arc
+	bool bHit = UGameplayStatics::PredictProjectilePath(this, Params, Result);
+	/// Draw teleport curve, annoying its here though could move it
+	if (bHit)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("hit %s"), *Result.HitResult.Actor->GetName())
+	}
 }
 
 /* Check if wand was fast but is slow now + delay timer */
