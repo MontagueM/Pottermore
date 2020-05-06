@@ -61,7 +61,10 @@ private:
 	bool bVerticalSpell();
 	bool bCanTriggerSpell();
 	void SpellTrigger();
-	void WandProjectileTrace(float ProjectileSpeed, float ProjectileTime);
+	bool WandProjectileTrace(float ProjectileSpeed, float ProjectileTime);
+
+	UPROPERTY(EditDefaultsOnly, Category = Setup)
+		TSubclassOf<class ACollisionProjectile> ProjectileBlueprint;
 public:
 	EControllerHand Hand;
 
