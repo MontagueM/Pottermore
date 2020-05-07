@@ -8,7 +8,6 @@
 #include "GameFramework/ProjectileMovementComponent.h" 
 #include "Kismet/GameplayStatics.h"
 #include "Sound/SoundCue.h"
-#include "Components/AudioComponent.h"
 
 // Sets default values
 ACollisionProjectile::ACollisionProjectile()
@@ -18,9 +17,6 @@ ACollisionProjectile::ACollisionProjectile()
 
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(FName("Projectile Movement"));
 	ProjectileMovement->bAutoActivate = false;
-
-	//AudioComponent = CreateDefaultSubobject<UAudioComponent>(FName("AudioComponent"));
-	//AudioComponent->SetupAttachment(GetRootComponent());
 }
 
 // Called when the game starts or when spawned
@@ -99,7 +95,5 @@ void ACollisionProjectile::ImpulseReaction()
 		UE_LOG(LogTemp, Warning, TEXT("sound effect"))
 			if (!ensure(CollisionProtegoSound)) { return; }
 		UGameplayStatics::PlaySoundAtLocation(GetWorld(), CollisionProtegoSound, Result.Location);
-		//AudioComponent->SetSound(CollisionProtegoSound);
-		//AudioComponent->Play();
 	}
 }
