@@ -2,9 +2,13 @@
 
 
 #include "CollisionProjectile.h"
-#include "GameFramework/ProjectileMovementComponent.h" 
-#include "Components/CapsuleComponent.h" 
+#include "Components/AudioComponent.h" 
+#include "Components/CapsuleComponent.h"
 #include "Wand.h"
+#include "GameFramework/ProjectileMovementComponent.h" 
+#include "Kismet/GameplayStatics.h"
+#include "Sound/SoundCue.h"
+#include "Components/AudioComponent.h"
 
 // Sets default values
 ACollisionProjectile::ACollisionProjectile()
@@ -13,7 +17,11 @@ ACollisionProjectile::ACollisionProjectile()
 	PrimaryActorTick.bCanEverTick = true;
 
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(FName("Projectile Movement"));
-	ProjectileMovement->bAutoActivate = false;}
+	ProjectileMovement->bAutoActivate = false;
+
+	//AudioComponent = CreateDefaultSubobject<UAudioComponent>(FName("AudioComponent"));
+	//AudioComponent->SetupAttachment(GetRootComponent());
+}
 
 // Called when the game starts or when spawned
 void ACollisionProjectile::BeginPlay()
@@ -48,24 +56,28 @@ void ACollisionProjectile::Hit(UPrimitiveComponent* tHitComponent,
 	AActor* tOtherActor,
 	UPrimitiveComponent* tOtherComp,
 	FVector tNormalImpulse,
-	const FHitResult& tResult)
+	const FHitResult& tResult,
+	bool tbIsProtegoWall)
 	{
 	HitComponent = tHitComponent;
 	OtherActor = tOtherActor;
+	OtherComp = tOtherComp;
 	NormalImpulse = tNormalImpulse;
 	Result = tResult;
-	//SelectHitAction();
+	bIsProtegoWall = tbIsProtegoWall;
+	SelectHitAction();
 }
 
-//void ACollisionProjectile::SelectHitAction()
-//{
-//	switch (Spell)
-//	{
-//	case ESpell::Stupefy:
-//		return ImpulseReaction();
-//		break;
-//	}
-//}
+void ACollisionProjectile::SelectHitAction()
+{
+	UE_LOG(LogTemp, Warning, TEXT("selecting hit action"))
+	switch (Wand->SelectedSpell)
+	{
+	case ESpell::Stupefy:
+		return ImpulseReaction();
+		break;
+	}
+}
 
 /* Add impulse (debug as needs to be on stupefy not here) */
 void ACollisionProjectile::ImpulseReaction()
@@ -80,5 +92,14 @@ void ACollisionProjectile::ImpulseReaction()
 		UE_LOG(LogTemp, Warning, TEXT("impulse"))
 			FVector ImpulseDirection = (Result.TraceEnd - Result.TraceStart).GetSafeNormal();
 		ImpulseComponent->AddForce(ImpulseDirection * 10000000);
+	}
+	else if (bIsProtegoWall)
+	{
+		// Play sound effect
+		UE_LOG(LogTemp, Warning, TEXT("sound effect"))
+			if (!ensure(CollisionProtegoSound)) { return; }
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), CollisionProtegoSound, Result.Location);
+		//AudioComponent->SetSound(CollisionProtegoSound);
+		//AudioComponent->Play();
 	}
 }

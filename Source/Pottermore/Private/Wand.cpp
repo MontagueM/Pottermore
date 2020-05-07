@@ -8,7 +8,6 @@
 #include "Kismet/GameplayStatics.h"
 #include "DrawDebugHelpers.h" 
 #include "CollisionProjectile.h"
-#include "Haptics/HapticFeedbackEffect_Base.h"
 
 // Sets default values
 AWand::AWand()
@@ -145,6 +144,8 @@ void AWand::WandProjectileTrace(float ProjectileSpeed, float ProjectileTime)
 	ActorSpawnParams.SpawnCollisionHandlingOverride = bNoCollisionFail ? ESpawnActorCollisionHandlingMethod::AlwaysSpawn : ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
 	ACollisionProjectile* SpawnedProjectile = GetWorld()->SpawnActor<ACollisionProjectile>(ProjectileBlueprint, StartLocation, FRotator::ZeroRotator, ActorSpawnParams);	
 	//SpawnedProjectile->Spell = SelectedSpell;
+	//SpawnedProjectile->SetOwner(this);
+	SpawnedProjectile->Wand = this;
 	SpawnedProjectile->LaunchProjectile(Direction * ProjectileSpeed);
 }
 
@@ -221,11 +222,4 @@ bool AWand::bCanTriggerSpell()
 void AWand::TryFire()
 {
 	if (bCanTriggerSpell()) { SpellTrigger(); }
-}
-
-void AWand::HapticFeedback(float Scale)
-{
-	//UHapticFeedbackEffect_Base* HapticBase;
-	//GetWorld()->GetFirstPlayerController()->PlayHapticEffect(HapticBase, Hand, Scale);
-	//if (Scale == 0) { GetWorld()->GetFirstPlayerController()->StopHapticEffect(Hand); }
 }

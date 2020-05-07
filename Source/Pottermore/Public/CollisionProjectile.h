@@ -27,14 +27,17 @@ public:
 	void SelectHitAction();
 	void ImpulseReaction();
 
-	//ESpell Spell;
-	UPrimitiveComponent* HitComponent;
-	AActor* OtherActor;
-	UPrimitiveComponent* OtherComp;
+	class AWand* Wand = nullptr;
+	UPrimitiveComponent* HitComponent = nullptr;
+	AActor* OtherActor = nullptr;
+	UPrimitiveComponent* OtherComp = nullptr;
 	FVector NormalImpulse;
 	FHitResult Result;
+	bool bIsProtegoWall;
+
 private:
 	class UProjectileMovementComponent* ProjectileMovement = nullptr;
+	//class UAudioComponent* AudioComponent = nullptr;
 	UPROPERTY(EditDefaultsOnly)
 	float DeleteTime = 5;
 	float ActivationTime = 0;
@@ -44,5 +47,9 @@ private:
 			AActor* OtherActor,
 			UPrimitiveComponent* OtherComp,
 			FVector NormalImpulse,
-			const FHitResult& Result);
+			const FHitResult& Result,
+			bool bIsProtegoWall);
+
+	UPROPERTY(EditDefaultsOnly, Category = Audio)
+		class USoundCue* CollisionProtegoSound;
 };

@@ -43,8 +43,6 @@ private:
 		class UStaticMeshComponent* WandMesh = nullptr;
 	UPROPERTY(VisibleAnywhere)
 		class UStaticMeshComponent* LumosLightSphere = nullptr;
-	UPROPERTY(EditDefaultsOnly)
-		ESpell SelectedSpell = ESpell::Protego;
 	class APointLight* LumosLight = nullptr;
 	TArray<float> WandVelocityHistory;
 	int32 WandVelocityHistoryMax = 10;
@@ -62,8 +60,6 @@ private:
 	bool bCanTriggerSpell();
 	void SpellTrigger();
 	void WandProjectileTrace(float ProjectileSpeed, float ProjectileTime);
-	void HapticFeedback(float Scale);
-
 	UPROPERTY(EditDefaultsOnly, Category = Setup)
 		TSubclassOf<class ACollisionProjectile> ProjectileBlueprint;
 public:
@@ -72,6 +68,8 @@ public:
 	void SetHand(EControllerHand SetHand);
 	void TryFire();
 
+	UPROPERTY(EditDefaultsOnly)
+		ESpell SelectedSpell = ESpell::Protego;
 	UPROPERTY(BlueprintAssignable)
 		FPericulumEvent PericulumFire;
 	UPROPERTY(BlueprintAssignable)
