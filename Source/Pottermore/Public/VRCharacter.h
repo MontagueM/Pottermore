@@ -101,5 +101,5 @@ private:
 		EControllerHand WandHand = EControllerHand::Left;
 
 	void SetupWand();
-	void DebugSpellFire();
+	void SpellChange();
 };

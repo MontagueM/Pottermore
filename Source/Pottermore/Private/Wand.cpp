@@ -232,3 +232,11 @@ void AWand::TryFire()
 {
 	if (bCanTriggerSpell()) { SpellTrigger(); }
 }
+
+void AWand::CycleSpells()
+{
+	int32 CurrentSpellIndex = SpellCycleOrder.IndexOfByKey(SelectedSpell);
+	if (CurrentSpellIndex == SpellCycleOrder.Num() - 1) { CurrentSpellIndex = 0; }
+	else { CurrentSpellIndex++; }
+	SelectedSpell = SpellCycleOrder[CurrentSpellIndex];
+}

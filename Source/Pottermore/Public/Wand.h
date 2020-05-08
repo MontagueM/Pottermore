@@ -61,11 +61,18 @@ private:
 	void SpellTrigger();
 	UPROPERTY(EditDefaultsOnly, Category = Setup)
 		TSubclassOf<class ACollisionProjectile> ProjectileBlueprint;
+
+	TArray<ESpell> SpellCycleOrder = { ESpell::Stupefy,
+	ESpell::Periculum,
+	ESpell::Protego,
+	ESpell::Lumos };
+
 public:
 	EControllerHand Hand;
 
 	void SetHand(EControllerHand SetHand);
 	void TryFire();
+	void CycleSpells();
 
 	UFUNCTION(BlueprintCallable)
 	void WandProjectileTrace(float ProjectileSpeed, float ProjectileTime);

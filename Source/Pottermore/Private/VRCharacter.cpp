@@ -123,8 +123,8 @@ void AVRCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 			UpdateAxisMapping(InputSettings, TEXT("TurnRight"), EKeys::OculusTouch_Right_Thumbstick_X, 1);
 		}
 		UE_LOG(LogTemp, Warning, TEXT("B"))
-		if (WandHand == EControllerHand::Left) { UpdateActionMapping(InputSettings, TEXT("DebugSpellFire"), FKey(), EKeys::OculusTouch_Left_X_Click); }
-		else { UpdateActionMapping(InputSettings, TEXT("DebugSpellFire"), FKey(), EKeys::OculusTouch_Right_A_Click); }
+		if (WandHand == EControllerHand::Left) { UpdateActionMapping(InputSettings, TEXT("SpellChange"), FKey(), EKeys::OculusTouch_Left_X_Click); }
+		else { UpdateActionMapping(InputSettings, TEXT("SpellChange"), FKey(), EKeys::OculusTouch_Right_A_Click); }
 
 		PlayerInputComponent->BindAxis(TEXT("Forward"), this, &AVRCharacter::MoveForward);
 		PlayerInputComponent->BindAxis(TEXT("Right"), this, &AVRCharacter::MoveRight);
@@ -133,7 +133,7 @@ void AVRCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 		PlayerInputComponent->BindAction(TEXT("CheckTeleport"), IE_Pressed, this, &AVRCharacter::StartTeleportationCheck);
 		PlayerInputComponent->BindAction(TEXT("CheckTeleport"), IE_Released, this, &AVRCharacter::StopTeleportationCheck);
 
-		PlayerInputComponent->BindAction(TEXT("DebugSpellFire"), IE_Pressed, this, &AVRCharacter::DebugSpellFire);
+		PlayerInputComponent->BindAction(TEXT("SpellChange"), IE_Pressed, this, &AVRCharacter::SpellChange);
 	}
 }
 
@@ -286,8 +286,8 @@ void AVRCharacter::SetupWand()
 	else { RightController->HideMesh(true); }
 }
 
-void AVRCharacter::DebugSpellFire()
+void AVRCharacter::SpellChange()
 {
 	UE_LOG(LogTemp, Warning, TEXT("debug spell in char"))
-	Wand->TryFire();
+	Wand->CycleSpells();
 }
