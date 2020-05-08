@@ -51,5 +51,5 @@ private:
 			bool bIsProtegoWall);
 
 	UPROPERTY(EditDefaultsOnly, Category = Audio)
-		class USoundCue* CollisionProtegoSound;
+		class USoundCue* ProtegoDeflectCue;
 };

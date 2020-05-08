@@ -8,6 +8,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "DrawDebugHelpers.h" 
 #include "CollisionProjectile.h"
+#include "Sound/SoundCue.h"
 
 // Sets default values
 AWand::AWand()
@@ -104,6 +105,10 @@ void AWand::TriggerStupefy()
 	float ProjectileSpeed = 3000;
 	float ProjectileTime = 4;
 	WandProjectileTrace(ProjectileSpeed, ProjectileTime);
+
+	// Play sound effect
+	//if (!ensure(StupefyAttackCue)) { return; }
+	//UGameplayStatics::PlaySoundAtLocation(GetWorld(), StupefyAttackCue, WandMesh->GetSocketLocation(TEXT("WandEnd")));
 }
 
 /* Activates spell effect for different spells */
@@ -147,6 +152,10 @@ void AWand::WandProjectileTrace(float ProjectileSpeed, float ProjectileTime)
 	//SpawnedProjectile->SetOwner(this);
 	SpawnedProjectile->Wand = this;
 	SpawnedProjectile->LaunchProjectile(Direction * ProjectileSpeed);
+
+	// Play sound effect
+	if (!ensure(StupefyAttackCue)) { return; }
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), StupefyAttackCue, WandMesh->GetSocketLocation(TEXT("WandEnd")));
 }
 
 /* Check if wand was fast but is slow now + delay timer */

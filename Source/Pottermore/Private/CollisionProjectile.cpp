@@ -93,7 +93,7 @@ void ACollisionProjectile::ImpulseReaction()
 	{
 		// Play sound effect
 		UE_LOG(LogTemp, Warning, TEXT("sound effect"))
-			if (!ensure(CollisionProtegoSound)) { return; }
-		UGameplayStatics::PlaySoundAtLocation(GetWorld(), CollisionProtegoSound, Result.Location);
+			if (!ensure(ProtegoDeflectCue)) { return; }
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), ProtegoDeflectCue, Result.Location);
 	}
 }

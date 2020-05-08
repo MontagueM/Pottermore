@@ -59,7 +59,6 @@ private:
 	bool bVerticalSpell();
 	bool bCanTriggerSpell();
 	void SpellTrigger();
-	void WandProjectileTrace(float ProjectileSpeed, float ProjectileTime);
 	UPROPERTY(EditDefaultsOnly, Category = Setup)
 		TSubclassOf<class ACollisionProjectile> ProjectileBlueprint;
 public:
@@ -68,7 +67,11 @@ public:
 	void SetHand(EControllerHand SetHand);
 	void TryFire();
 
-	UPROPERTY(EditDefaultsOnly)
+	UFUNCTION(BlueprintCallable)
+	void WandProjectileTrace(float ProjectileSpeed, float ProjectileTime);
+
+
+	UPROPERTY(EditAnywhere)
 		ESpell SelectedSpell = ESpell::Protego;
 	UPROPERTY(BlueprintAssignable)
 		FPericulumEvent PericulumFire;
@@ -76,4 +79,8 @@ public:
 		FProtegoEvent ProtegoFire;
 	UPROPERTY(BlueprintAssignable)
 		FStupefyEvent StupefyFire;
+
+private:
+	UPROPERTY(EditDefaultsOnly, Category = Audio)
+		class USoundCue* StupefyAttackCue;
 };
