@@ -12,4 +12,5 @@ The system is quite basic but fun at its core. Blocking spells by waving your wa
 The main issue was dealing with separating the collision spell system and the niagara systems, as the niagara systems have no public methods or variables. Instead, I synced a projectile with the same velocity and lifetime to mimick the collision as close as possible.
 
 Blocking a spell, then casting one:
+
 ![blockspell](https://i.imgur.com/93yQKA2.gif)
